@@ -18,27 +18,30 @@ import codecs
 
 
 #Get directory listing 
-
 MainPath = r"C:\Users\gogunwumi\Documents\Temp\KCP_Unit2"
 
 
-folders = ["1118"]
+folders = ["1118"]  #Specify folders to process 
+
+#Define data/structures to be used later 
 rows =[]
 headers = ["OutletTemp","Boiler Temp","WarmPlate Temp","Max Temp", "Calibrated Offset","Pump PWM","Boiler ON","PTC ON","Flow Rate","Current Block Volume","Current Total Volume","Clean Count","recipe Size","Recipe Brew","Recipe Block","Recipe Total Volume","Recipe Time"]
 df = pd.DataFrame(np.nan, index=[0], columns =headers) ##Pre-define data structure 
 df_summary  = pd.DataFrame(columns = ["Brew Number", "Max Outlet Temp", "Max Boiler temp", "Recipe Blocks", "Total Volume", "Max Warm Plate temp", "Max Flowrate"])
 df_Final  = pd.DataFrame(columns = ["Brew Number", "Max Outlet Temp", "Max Boiler temp", "Recipe Blocks", "Total Volume", "Max Warm Plate temp", "Max Flowrate"])
-Offset =7
 
 
 
 
 
-for folder in folders :                 #Iterate through data folders 
+#Iterate through data folders
+for folder in folders :                  
     os.chdir(MainPath + "/" + folder)  #Navigate to current folder 
-    files  = [ name for name in os.listdir(".") if os.path.isfile(name)]
+    files  = [ name for name in os.listdir(".") if os.path.isfile(name)]  #Get all files 
+    
     directory = "Parsed"
     
+    #Create folders to save files ,  if they don't exist already 
     if os.path.exists("Parsed")== False:
         os.mkdir("Parsed")
     
@@ -47,19 +50,26 @@ for folder in folders :                 #Iterate through data folders
         
     
 
-    
+    #Iterate through files in folder 
     for file in files :
-        Data =[]
+        Data =[]  
         
-        filetype = file.split(".")[1].lower()
+        
+        filetype = file.split(".")[1].lower()  #What kind of file is it 
+        
+        #Handle csv and .txt files differently 
         if filetype == "csv":
               with open(file,'r') as csvfile :
                                    
                     csvreader = csv.reader(csvfile)
-                    rows = list(csvreader)
+                    rows = list(csvreader)  #Read in all data at once 
+                    
+                    #Skip file if it contains only header row 
                     if len(rows) > 1 :
                         
-                        del rows[0:5]         ##delete first 4 rows , usually junk data                
+                        del rows[0:5]         ##delete first 4 rows , usually junk data  
+                        
+                        #Process each row from csv file 
                         for row in rows :
                            
                             data = row[0].split()
@@ -78,6 +88,8 @@ for folder in folders :                 #Iterate through data folders
                                     else:
                                         data[k] = float(data[k])
                                 Data.append(data)
+                                
+                        #Write Data matrix to dataframe structure and save to approptiate directory
                         df = pd.DataFrame(Data,columns=headers)
                         SaveName = file.split('.')[0]+"_Parsed.xlsx"
                         Brew = file.split('.')[0][5:]
@@ -96,7 +108,7 @@ for folder in folders :                 #Iterate through data folders
                         df_summary.loc[0,"Max Warm Plate temp"] = df['WarmPlate Temp'].max()
                         df_summary.loc[0,"Max Flowrate"] = df['Flow Rate'].max()
                         #df_summary = df_summary.astype(int)
-                        df_Final = df_Final.append(df_summary,ignore_index = True)
+                        df_Final = df_Final.append(df_summary,ignore_index = True)  ##DataFrame holds summary data from all files
                         
                         ##Make plot(s) and save to Plot directory
                         fig, ax1=  plt.subplots(figsize=(20, 10))
@@ -137,6 +149,7 @@ for folder in folders :                 #Iterate through data folders
                         plt.title('Brew Volumes')
                         ax2.legend()
                         
+                        #Save Plots to appropriate directory
                         SaveName = file.split('.')[0]
                         SavePath = os.path.join(MainPath,folder,"Plots",SaveName)
                         plt.savefig(SavePath)
