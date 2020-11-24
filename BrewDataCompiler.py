@@ -18,6 +18,46 @@ import codecs
 import glob
 from openpyxl.styles import numbers
 
+
+
+
+#Create Workboook 
+workbook = xlsxwriter.Workbook("CompiledData.xlsx")
+
+worksheet = workbook.add_worksheet() #Create empty worksheet 
+
+#Create specific formats 
+Headers  = ["Date","Brew Number","Post Resevoir Weight (g)","Pretest Carafe Weight (g)","Post Test Resevoir Weight (g)","Post Test Carafe Weight (g)","Brew Time", "Comments/Notes","Actual Water Used (g)", "Volume output (g)", "Vol. Error"]
+headers = workbook.add_format({'bold': True})
+brewT = workbook.add_format({'num_format': 'h:mm;@'})
+VolErr = workbook.add_format({'num_format': '0.00%'})
+Comments = workbook.add_format({'num_format': 'General', 'valign': 'vjustify'})
+Data_format = workbook.add_format({'num_format': 'General','align': 'center'})
+
+for item in enumerate(Headers):
+        
+    worksheet.write(1,item[0],item[1],headers)
+    
+workbook.close()
+                            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 MasterFilePath = r"C:\Users\gogunwumi\Documents\Temp\Scale Testing CFP300.xlsx"
 
 ##Create Writer to MainSheet 
