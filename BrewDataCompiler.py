@@ -125,9 +125,9 @@ for file in files :
             #Calculate Volume Output 
             worksheet.write_formula(i,10,'{=G' + str(i+1) + '- E'+str(i+1)+'}')
             
-            #Calculate Vol Error
+            # #Calculate Vol Error
             
-            worksheet.write_formula(i,11,'{=(J' + str(i+1) + '-'+str(Brew_Target)+')/'+ str(Brew_Target)+'}',VolErr_format)
+            # worksheet.write_formula(i,11,'{=(J' + str(i+1) + '-'+str(Brew_Target)+')/'+ str(Brew_Target)+'}',VolErr_format)
     
                     
 workbook.close()
