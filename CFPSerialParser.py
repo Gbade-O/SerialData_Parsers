@@ -18,10 +18,10 @@ import codecs
 
 
 #Get directory listing 
-MainPath = r"C:\Users\gogunwumi\Documents\Temp\KCP_Unit2"
+MainPath = r"C:\Users\gogunwumi\OneDrive - SharkNinja\Projects\Coffee\CFP300\BlownTCO"
 
 
-folders = ["1118"]  #Specify folders to process 
+folders = ["CFP_Unit1","CFP_Unit3"]  #Specify folders to process 
 
 #Define data/structures to be used later 
 rows =[]
@@ -59,40 +59,46 @@ for folder in folders :
         
         #Handle csv and .txt files differently 
         if filetype == "csv":
-              with open(file,'r') as csvfile :
+              with open(file,'r', encoding = 'utf-8', errors = 'ignore') as csvfile :
                                    
                     csvreader = csv.reader(csvfile)
                     rows = list(csvreader)  #Read in all data at once 
                     
                     #Skip file if it contains only header row 
-                    if len(rows) > 1 :
+                    if len(rows) > 10 :
                         
                         del rows[0:5]         ##delete first 4 rows , usually junk data  
                         
                         #Process each row from csv file 
                         for row in rows :
-                           
-                            data = row[0].split()
-                            if 'B0' in data :
-                                Bool = 1
-                            elif 'B1' in data:
-                                Bool  = 1
-                            else:
-                                Bool =0
-                            if Bool==1 :
-                                for k in range(0,len(data)):
-                                    if k==6 or k==7:
-                                        data[k] =  float(re.split('[BP]',data[k])[1])
-                                    elif k<5:
-                                        data[k] = float(data[k])/10
-                                    else:
-                                        data[k] = float(data[k])
-                                Data.append(data)
+                            #Try to parse row, if it has junk/special characters . Skip it and move on
+                            try :
+                                
+                                data = row[0].split()
+                                if 'B0' in data :
+                                    Bool = 1
+                                elif 'B1' in data:
+                                    Bool  = 1
+                                else:
+                                    Bool =0
+                                if Bool==1 :
+                                    for k in range(0,len(data)):
+                                        if k==6 or k==7:
+                                            data[k] =  float(re.split('[BP]',data[k])[1])
+                                        elif k<5:
+                                            data[k] = float(data[k])/10
+                                        else:
+                                            data[k] = float(data[k])
+                                    Data.append(data)
+                            except:
+                                
+                                pass
+                                        
                                 
                         #Write Data matrix to dataframe structure and save to approptiate directory
                         df = pd.DataFrame(Data,columns=headers)
                         SaveName = file.split('.')[0]+"_Parsed.xlsx"
-                        Brew = file.split('.')[0][5:]
+                        Brew = file.split('.')[0][3:]
                         SavePath = os.path.join(MainPath,folder,"Parsed",SaveName)
                         writer = pd.ExcelWriter(SavePath, engine='xlsxwriter')
                         df.to_excel(writer)
